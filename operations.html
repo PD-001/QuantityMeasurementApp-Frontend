@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operations — Quantity Measurement</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a class="nav-brand" href="dashboard.html">Quantity <span>Measurement</span></a>
+    <ul class="nav-links">
+      <li><a href="dashboard.html" data-page="dashboard">Dashboard</a></li>
+      <li><a href="operations.html" data-page="operations">Operations</a></li>
+      <li><a href="profile.html" data-page="profile">Profile</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="avatar" id="nav-avatar" onclick="window.location.href='profile.html'">?</div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <div class="page-header">
+      <h1>Operations</h1>
+      <p>Perform comparisons, conversions, and arithmetic on quantities</p>
+    </div>
+
+    <!-- Operation tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('compare', this)">Compare</button>
+      <button class="tab-btn" onclick="showTab('convert', this)">Convert</button>
+      <button class="tab-btn" onclick="showTab('add', this)">Add</button>
+      <button class="tab-btn" onclick="showTab('subtract', this)">Subtract</button>
+      <button class="tab-btn" onclick="showTab('divide', this)">Divide</button>
+    </div>
+
+    <!-- COMPARE ---------------------------------------------------------------->
+    <div id="tab-compare" class="tab-panel">
+      <div class="card">
+        <p class="section-title">Compare two quantities</p>
+        <div class="form-row">
+          <div>
+            <p class="section-title" style="margin-bottom:.5rem">Quantity 1</p>
+            <div class="form-group">
+              <label>Value</label>
+              <input type="number" id="cmp-val1" placeholder="e.g. 1">
+            </div>
+            <div class="form-group">
+              <label>Unit</label>
+              <select id="cmp-unit1"></select>
+            </div>
+          </div>
+          <div>
+            <p class="section-title" style="margin-bottom:.5rem">Quantity 2</p>
+            <div class="form-group">
+              <label>Value</label>
+              <input type="number" id="cmp-val2" placeholder="e.g. 12">
+            </div>
+            <div class="form-group">
+              <label>Unit</label>
+              <select id="cmp-unit2"></select>
+            </div>
+          </div>
+        </div>
+        <div id="cmp-alert" class="alert" style="margin-bottom:1rem;"></div>
+        <div class="result-display" id="cmp-result">
+          <div class="result-label">Are they equal?</div>
+          <div class="result-value" id="cmp-result-val"></div>
+        </div>
+        <hr class="divider">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="btn btn-primary" onclick="doCompare()" id="cmp-btn">Compare</button>
+          <div class="spinner" id="cmp-spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONVERT ---------------------------------------------------------------->
+    <div id="tab-convert" class="tab-panel" style="display:none;">
+      <div class="card">
+        <p class="section-title">Convert a quantity</p>
+        <div class="form-row">
+          <div>
+            <div class="form-group">
+              <label>Value</label>
+              <input type="number" id="conv-val" placeholder="e.g. 100">
+            </div>
+            <div class="form-group">
+              <label>From unit</label>
+              <select id="conv-unit"></select>
+            </div>
+          </div>
+          <div>
+            <div class="form-group">
+              <label>Target unit</label>
+              <select id="conv-target"></select>
+            </div>
+            <div class="form-group" style="padding-top: 28px;">
+              <p style="font-size:13px; color:var(--hint);">Target unit must be the same type as the source unit.</p>
+            </div>
+          </div>
+        </div>
+        <div id="conv-alert" class="alert" style="margin-bottom:1rem;"></div>
+        <div class="result-display" id="conv-result">
+          <div class="result-label">Converted value</div>
+          <div class="result-value" id="conv-result-val"></div>
+        </div>
+        <hr class="divider">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="btn btn-primary" onclick="doConvert()" id="conv-btn">Convert</button>
+          <div class="spinner" id="conv-spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD -------------------------------------------------------------------->
+    <div id="tab-add" class="tab-panel" style="display:none;">
+      <div class="card">
+        <p class="section-title">Add two quantities</p>
+        <div class="form-row">
+          <div>
+            <p class="section-title" style="margin-bottom:.5rem">Quantity 1</p>
+            <div class="form-group">
+              <label>Value</label>
+              <input type="number" id="add-val1" placeholder="e.g. 1">
+            </div>
+            <div class="form-group">
+              <label>Unit</label>
+              <select id="add-unit1"></select>
+            </div>
+          </div>
+          <div>
+            <p class="section-title" style="margin-bottom:.5rem">Quantity 2</p>
+            <div class="form-group">
+              <label>Value</label>
+              <input type="number" id="add-val2" placeholder="e.g. 500">
+            </div>
+            <div class="form-group">
+              <label>Unit</label>
+              <select id="add-unit2"></select>
+            </div>
+          </div>
+        </div>
+        <div id="add-alert" class="alert" style="margin-bottom:1rem;"></div>
+        <div class="result-display" id="add-result">
+          <div class="result-label">Sum</div>
+          <div class="result-value" id="add-result-val"></div>
+        </div>
+        <hr class="divider">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="btn btn-primary" onclick="doAdd()" id="add-btn">Add</button>
+          <div class="spinner" id="add-spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUBTRACT --------------------------------------------------------------->
+    <div id="tab-subtract" class="tab-panel" style="display:none;">
+      <div class="card">
+        <p class="section-title">Subtract two quantities</p>
+        <div class="form-row">
+          <div>
+            <p class="section-title" style="margin-bottom:.5rem">Quantity 1</p>
+            <div class="form-group">
+              <label>Value</label>
+              <input type="number" id="sub-val1" placeholder="e.g. 2">
+            </div>
+            <div class="form-group">
+              <label>Unit</label>
+              <select id="sub-unit1"></select>
+            </div>
+          </div>
+          <div>
+            <p class="section-title" style="margin-bottom:.5rem">Quantity 2</p>
+            <div class="form-group">
+              <label>Value</label>
+              <input type="number" id="sub-val2" placeholder="e.g. 500">
+            </div>
+            <div class="form-group">
+              <label>Unit</label>
+              <select id="sub-unit2"></select>
+            </div>
+          </div>
+        </div>
+        <div id="sub-alert" class="alert" style="margin-bottom:1rem;"></div>
+        <div class="result-display" id="sub-result">
+          <div class="result-label">Difference</div>
+          <div class="result-value" id="sub-result-val"></div>
+        </div>
+        <hr class="divider">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="btn btn-primary" onclick="doSubtract()" id="sub-btn">Subtract</button>
+          <div class="spinner" id="sub-spinner"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIVIDE ----------------------------------------------------------------->
+    <div id="tab-divide" class="tab-panel" style="display:none;">
+      <div class="card">
+        <p class="section-title">Divide two quantities</p>
+        <div class="form-row">
+          <div>
+            <p class="section-title" style="margin-bottom:.5rem">Dividend</p>
+            <div class="form-group">
+              <label>Value</label>
+              <input type="number" id="div-val1" placeholder="e.g. 10">
+            </div>
+            <div class="form-group">
+              <label>Unit</label>
+              <select id="div-unit1"></select>
+            </div>
+          </div>
+          <div>
+            <p class="section-title" style="margin-bottom:.5rem">Divisor</p>
+            <div class="form-group">
+              <label>Value</label>
+              <input type="number" id="div-val2" placeholder="e.g. 5">
+            </div>
+            <div class="form-group">
+              <label>Unit</label>
+              <select id="div-unit2"></select>
+            </div>
+          </div>
+        </div>
+        <div id="div-alert" class="alert" style="margin-bottom:1rem;"></div>
+        <div class="result-display" id="div-result">
+          <div class="result-label">Quotient (scalar)</div>
+          <div class="result-value" id="div-result-val"></div>
+        </div>
+        <hr class="divider">
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button class="btn btn-primary" onclick="doDivide()" id="div-btn">Divide</button>
+          <div class="spinner" id="div-spinner"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    // redirectIfNotLoggedIn();
+  async function setupNav() {
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        if (link.dataset.page === 'operations') link.classList.add('active');
+    });
+
+    const avatarEl = document.getElementById('nav-avatar');
+    if (!isLoggedIn()) {
+        avatarEl.outerHTML = `
+            <a href="index.html" class="btn btn-sm" 
+               style="font-size:13px; padding:5px 12px;">
+               Login to save history
+            </a>`;
+        return;
+    }
+
+    const user = await loadUserProfile();
+    if (!user) return;
+    if (user.picture) {
+        avatarEl.innerHTML = `<img src="${user.picture}" alt="${user.name}">`;
+    } else {
+        avatarEl.textContent = (user.name || 'U')[0].toUpperCase();
+    }
+  }
+
+setupNav();
+
+    populateUnitSelect(document.getElementById('cmp-unit1'));
+    populateUnitSelect(document.getElementById('cmp-unit2'));
+    populateUnitSelect(document.getElementById('conv-unit'));
+    populateUnitSelect(document.getElementById('conv-target'));
+    populateUnitSelect(document.getElementById('add-unit1'));
+    populateUnitSelect(document.getElementById('add-unit2'));
+    populateUnitSelect(document.getElementById('sub-unit1'));
+    populateUnitSelect(document.getElementById('sub-unit2'));
+    populateUnitSelect(document.getElementById('div-unit1'));
+    populateUnitSelect(document.getElementById('div-unit2'));
+
+    function showTab(name, btn) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + name).style.display = 'block';
+      btn.classList.add('active');
+    }
+
+    function getQuantity(valId, unitId) {
+      return { value: parseFloat(document.getElementById(valId).value), unit: document.getElementById(unitId).value };
+    }
+
+    function validateQuantity(q, label, alertEl) {
+      if (isNaN(q.value)) { showAlert(alertEl, label + ' value is required.', 'error'); return false; }
+      if (!q.unit) { showAlert(alertEl, label + ' unit is required.', 'error'); return false; }
+      return true;
+    }
+
+    async function doCompare() {
+      const alertEl = document.getElementById('cmp-alert');
+      const resultEl = document.getElementById('cmp-result');
+      hideAlert(alertEl); resultEl.classList.remove('show');
+
+      const q1 = getQuantity('cmp-val1', 'cmp-unit1');
+      const q2 = getQuantity('cmp-val2', 'cmp-unit2');
+      if (!validateQuantity(q1, 'Quantity 1', alertEl)) return;
+      if (!validateQuantity(q2, 'Quantity 2', alertEl)) return;
+
+      setLoading(document.getElementById('cmp-btn'), document.getElementById('cmp-spinner'), true);
+      const res = await compareQuantities(q1, q2);
+      setLoading(document.getElementById('cmp-btn'), document.getElementById('cmp-spinner'), false);
+
+      if (res && res.ok) {
+        const equal = res.data.result === true || res.data.result === 'true';
+        document.getElementById('cmp-result-val').textContent = equal ? 'Yes, they are equal' : 'No, they are not equal';
+        document.getElementById('cmp-result-val').style.color = equal ? 'var(--success)' : 'var(--danger)';
+        resultEl.classList.add('show');
+      } else {
+        showAlert(alertEl, res?.data?.message || 'Operation failed.', 'error');
+      }
+    }
+
+    async function doConvert() {
+      const alertEl = document.getElementById('conv-alert');
+      const resultEl = document.getElementById('conv-result');
+      hideAlert(alertEl); resultEl.classList.remove('show');
+
+      const quantity = getQuantity('conv-val', 'conv-unit');
+      const targetUnit = document.getElementById('conv-target').value;
+      if (!validateQuantity(quantity, 'Quantity', alertEl)) return;
+      if (!targetUnit) { showAlert(alertEl, 'Target unit is required.', 'error'); return; }
+
+      setLoading(document.getElementById('conv-btn'), document.getElementById('conv-spinner'), true);
+      const res = await convertQuantity(quantity, targetUnit);
+      setLoading(document.getElementById('conv-btn'), document.getElementById('conv-spinner'), false);
+
+      if (res && res.ok) {
+        document.getElementById('conv-result-val').textContent = res.data.result || JSON.stringify(res.data);
+        resultEl.classList.add('show');
+      } else {
+        showAlert(alertEl, res?.data?.message || 'Conversion failed.', 'error');
+      }
+    }
+
+    async function doAdd() {
+      const alertEl = document.getElementById('add-alert');
+      const resultEl = document.getElementById('add-result');
+      hideAlert(alertEl); resultEl.classList.remove('show');
+
+      const q1 = getQuantity('add-val1', 'add-unit1');
+      const q2 = getQuantity('add-val2', 'add-unit2');
+      if (!validateQuantity(q1, 'Quantity 1', alertEl)) return;
+      if (!validateQuantity(q2, 'Quantity 2', alertEl)) return;
+
+      setLoading(document.getElementById('add-btn'), document.getElementById('add-spinner'), true);
+      const res = await addQuantities(q1, q2);
+      setLoading(document.getElementById('add-btn'), document.getElementById('add-spinner'), false);
+
+      if (res && res.ok) {
+        document.getElementById('add-result-val').textContent = res.data.result || JSON.stringify(res.data);
+        resultEl.classList.add('show');
+      } else {
+        showAlert(alertEl, res?.data?.message || 'Addition failed.', 'error');
+      }
+    }
+
+    async function doSubtract() {
+      const alertEl = document.getElementById('sub-alert');
+      const resultEl = document.getElementById('sub-result');
+      hideAlert(alertEl); resultEl.classList.remove('show');
+
+      const q1 = getQuantity('sub-val1', 'sub-unit1');
+      const q2 = getQuantity('sub-val2', 'sub-unit2');
+      if (!validateQuantity(q1, 'Quantity 1', alertEl)) return;
+      if (!validateQuantity(q2, 'Quantity 2', alertEl)) return;
+
+      setLoading(document.getElementById('sub-btn'), document.getElementById('sub-spinner'), true);
+      const res = await subtractQuantities(q1, q2);
+      setLoading(document.getElementById('sub-btn'), document.getElementById('sub-spinner'), false);
+
+      if (res && res.ok) {
+        document.getElementById('sub-result-val').textContent = res.data.result || JSON.stringify(res.data);
+        resultEl.classList.add('show');
+      } else {
+        showAlert(alertEl, res?.data?.message || 'Subtraction failed.', 'error');
+      }
+    }
+
+    async function doDivide() {
+      const alertEl = document.getElementById('div-alert');
+      const resultEl = document.getElementById('div-result');
+      hideAlert(alertEl); resultEl.classList.remove('show');
+
+      const q1 = getQuantity('div-val1', 'div-unit1');
+      const q2 = getQuantity('div-val2', 'div-unit2');
+      if (!validateQuantity(q1, 'Dividend', alertEl)) return;
+      if (!validateQuantity(q2, 'Divisor', alertEl)) return;
+
+      setLoading(document.getElementById('div-btn'), document.getElementById('div-spinner'), true);
+      const res = await divideQuantities(q1, q2);
+      setLoading(document.getElementById('div-btn'), document.getElementById('div-spinner'), false);
+
+      if (res && res.ok) {
+        document.getElementById('div-result-val').textContent = res.data.result ?? res.data;
+        resultEl.classList.add('show');
+      } else {
+        showAlert(alertEl, res?.data?.message || 'Division failed.', 'error');
+      }
+    }
+  </script>
+</body>
+
+</html>

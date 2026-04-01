@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Quantity Measurement</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a class="nav-brand" href="dashboard.html">Quantity <span>Measurement</span></a>
+    <ul class="nav-links">
+      <li><a href="dashboard.html" data-page="dashboard">Dashboard</a></li>
+      <li><a href="operations.html" data-page="operations">Operations</a></li>
+      <li><a href="profile.html" data-page="profile">Profile</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="avatar" id="nav-avatar" onclick="window.location.href='profile.html'">?</div>
+    </div>
+  </nav>
+
+  <!-- Page -->
+  <div class="page-wide">
+
+    <div class="page-header"
+      style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+      <div>
+        <h1>Dashboard</h1>
+        <p>All your measurement operations</p>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn btn-sm" onclick="loadDashboard()">↻ Refresh</button>
+        <button class="btn btn-sm btn-danger" onclick="confirmDeleteAll()" id="delete-btn">Delete all</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total operations</div>
+        <div class="stat-value" id="stat-total">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Comparisons</div>
+        <div class="stat-value" id="stat-compare">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Conversions</div>
+        <div class="stat-value" id="stat-convert">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Arithmetic</div>
+        <div class="stat-value" id="stat-arithmetic">—</div>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="tabs" id="filter-tabs">
+      <button class="tab-btn active" data-filter="ALL" onclick="filterTable('ALL', this)">All</button>
+      <button class="tab-btn" data-filter="COMPARE" onclick="filterTable('COMPARE', this)">Compare</button>
+      <button class="tab-btn" data-filter="CONVERT" onclick="filterTable('CONVERT', this)">Convert</button>
+      <button class="tab-btn" data-filter="ADD" onclick="filterTable('ADD', this)">Add</button>
+      <button class="tab-btn" data-filter="SUBTRACT" onclick="filterTable('SUBTRACT', this)">Subtract</button>
+      <button class="tab-btn" data-filter="DIVIDE" onclick="filterTable('DIVIDE', this)">Divide</button>
+    </div>
+
+    <!-- Alert -->
+    <div id="alert" class="alert" style="margin-bottom: 1rem;"></div>
+
+    <!-- Table -->
+    <div class="table-wrap" id="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Operation</th>
+            <th>Operand 1</th>
+            <th>Operand 2</th>
+            <th>Result</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="measurements-body">
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="spinner show" style="margin: 0 auto;"></div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    redirectIfNotLoggedIn();
+
+    let allMeasurements = [];
+    let currentFilter = 'ALL';
+
+    async function loadDashboard() {
+      const alertEl = document.getElementById('alert');
+      hideAlert(alertEl);
+
+      // Load measurements
+      const res = await getAllMeasurements();
+      if (!res || !res.ok) {
+        showAlert(alertEl, 'Failed to load measurements.', 'error');
+        return;
+      }
+
+      allMeasurements = res.data || [];
+
+      // Update stats
+      document.getElementById('stat-total').textContent = allMeasurements.length;
+      document.getElementById('stat-compare').textContent =
+        allMeasurements.filter(m => m.operationType === 'COMPARE').length;
+      document.getElementById('stat-convert').textContent =
+        allMeasurements.filter(m => m.operationType === 'CONVERT').length;
+      document.getElementById('stat-arithmetic').textContent =
+        allMeasurements.filter(m => ['ADD', 'SUBTRACT', 'DIVIDE'].includes(m.operationType)).length;
+
+      renderTable(currentFilter);
+    }
+
+    function filterTable(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTable(filter);
+    }
+
+    function renderTable(filter) {
+      const tbody = document.getElementById('measurements-body');
+      const filtered = filter === 'ALL'
+        ? allMeasurements
+        : allMeasurements.filter(m => m.operationType === filter);
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+        <tr><td colspan="5">
+          <div class="empty-state">
+            <div class="empty-icon">◎</div>
+            <p>${filter === 'ALL' ? 'No measurements yet. Go to Operations to get started.' : 'No ' + filter.toLowerCase() + ' operations yet.'}</p>
+          </div>
+        </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(m => `
+      <tr>
+        <td><span class="badge badge-blue">${m.operationType}</span></td>
+        <td>${m.operand1Value ?? '—'} <span style="color:var(--hint)">${m.operand1Unit ?? ''}</span></td>
+        <td>${m.operand2Value ? m.operand2Value + ' <span style="color:var(--hint)">' + (m.operand2Unit ?? '') + '</span>' : '<span style="color:var(--hint)">—</span>'}</td>
+        <td style="font-weight:500; color:var(--text)">${m.resultValue ?? '—'} <span style="color:var(--hint)">${m.resultUnit ?? ''}</span></td>
+        <td>${m.success
+          ? '<span class="badge badge-green">OK</span>'
+          : '<span class="badge badge-red" title="' + (m.errorMessage || '') + '">Error</span>'
+        }</td>
+      </tr>
+    `).join('');
+    }
+
+    async function confirmDeleteAll() {
+      if (!confirm('Delete all measurements? This cannot be undone.')) return;
+      const alertEl = document.getElementById('alert');
+      const res = await deleteAllMeasurements();
+      if (res && res.ok) {
+        showAlert(alertEl, 'All measurements deleted.', 'success');
+        allMeasurements = [];
+        renderTable(currentFilter);
+        document.getElementById('stat-total').textContent = '0';
+        document.getElementById('stat-compare').textContent = '0';
+        document.getElementById('stat-convert').textContent = '0';
+        document.getElementById('stat-arithmetic').textContent = '0';
+      } else {
+        showAlert(alertEl, 'Failed to delete measurements.', 'error');
+      }
+    }
+
+    initNav('dashboard');
+    loadDashboard();
+  </script>
+</body>
+
+</html>

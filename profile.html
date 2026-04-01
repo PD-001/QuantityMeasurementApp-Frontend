@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — Quantity Measurement</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <a class="nav-brand" href="dashboard.html">Quantity <span>Measurement</span></a>
+    <ul class="nav-links">
+      <li><a href="dashboard.html" data-page="dashboard">Dashboard</a></li>
+      <li><a href="operations.html" data-page="operations">Operations</a></li>
+      <li><a href="profile.html" data-page="profile">Profile</a></li>
+    </ul>
+    <div class="nav-right">
+      <div class="avatar" id="nav-avatar" onclick="window.location.href='profile.html'">?</div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <div class="page-header">
+      <h1>Profile</h1>
+      <p>Your account details</p>
+    </div>
+
+    <div id="alert" class="alert" style="margin-bottom:1rem;"></div>
+
+    <!-- Profile card -->
+    <div class="card" id="profile-card" style="display:none;">
+
+      <div class="profile-header">
+        <div class="profile-avatar" id="profile-avatar">?</div>
+        <div>
+          <div class="profile-name" id="profile-name">—</div>
+          <div class="profile-email" id="profile-email">—</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <p class="section-title">Account details</p>
+
+      <div class="field-row">
+        <span class="field-label">User ID</span>
+        <span class="field-value" id="field-id">—</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Email</span>
+        <span class="field-value" id="field-email">—</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Name</span>
+        <span class="field-value" id="field-name">—</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Login provider</span>
+        <span class="field-value" id="field-provider"><span class="badge badge-blue">—</span></span>
+      </div>
+
+      <hr class="divider">
+
+      <p class="section-title">Session</p>
+
+      <div class="field-row">
+        <span class="field-label">JWT token</span>
+        <span>
+          <button class="btn btn-sm" onclick="toggleToken()">Show token</button>
+        </span>
+      </div>
+
+      <div id="token-box" style="display:none; margin-top: 10px;">
+        <div style="
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px 12px;
+        font-family: 'DM Mono', monospace;
+        font-size: 12px;
+        color: var(--muted);
+        word-break: break-all;
+        line-height: 1.6;
+      " id="token-display"></div>
+        <p style="font-size: 12px; color: var(--hint); margin-top: 6px;">
+          Copy this token and use it in Postman as: <code>Authorization: Bearer &lt;token&gt;</code>
+        </p>
+      </div>
+
+      <hr class="divider">
+
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div>
+          <p style="font-size: 14px; font-weight: 500;">Sign out</p>
+          <p style="font-size: 13px; color: var(--muted);">Clears your session from this browser.</p>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="logout()">Sign out</button>
+      </div>
+
+    </div>
+
+    <!-- Loading skeleton -->
+    <div class="card" id="loading-card">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div
+          style="width:64px;height:64px;border-radius:50%;background:var(--bg);border:1px solid var(--border);flex-shrink:0;">
+        </div>
+        <div style="flex:1;">
+          <div style="height:16px;background:var(--bg);border-radius:4px;width:40%;margin-bottom:8px;"></div>
+          <div style="height:13px;background:var(--bg);border-radius:4px;width:60%;"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    redirectIfNotLoggedIn();
+    initNav('profile');
+
+    let tokenVisible = false;
+
+    function toggleToken() {
+      tokenVisible = !tokenVisible;
+      const box = document.getElementById('token-box');
+      const btn = event.target;
+      box.style.display = tokenVisible ? 'block' : 'none';
+      btn.textContent = tokenVisible ? 'Hide token' : 'Show token';
+      if (tokenVisible) {
+        document.getElementById('token-display').textContent = getToken() || '(no token found)';
+      }
+    }
+
+    async function loadProfile() {
+      const alertEl = document.getElementById('alert');
+
+      // Clear cache to get fresh data
+      localStorage.removeItem('user_profile');
+      const user = await loadUserProfile();
+
+      document.getElementById('loading-card').style.display = 'none';
+
+      if (!user) {
+        showAlert(alertEl, 'Failed to load profile. Please try again.', 'error');
+        return;
+      }
+
+      // Avatar
+      const avatarEl = document.getElementById('profile-avatar');
+      if (user.picture) {
+        avatarEl.innerHTML = `<img src="${user.picture}" alt="${user.name}">`;
+      } else {
+        avatarEl.textContent = (user.name || user.email || 'U')[0].toUpperCase();
+      }
+
+      // Fields
+      document.getElementById('profile-name').textContent = user.name || '—';
+      document.getElementById('profile-email').textContent = user.email || '—';
+      document.getElementById('field-id').textContent = user.id || '—';
+      document.getElementById('field-email').textContent = user.email || '—';
+      document.getElementById('field-name').textContent = user.name || '—';
+      const provider = user.provider || 'google';
+      document.getElementById('field-provider').innerHTML =
+        provider === 'local'
+          ? '<span class="badge badge-blue">Email / Password</span>'
+          : '<span class="badge badge-blue">Google OAuth2</span>';
+      document.getElementById('profile-card').style.display = 'block';
+    }
+
+    loadProfile();
+  </script>
+</body>
+
+</html>

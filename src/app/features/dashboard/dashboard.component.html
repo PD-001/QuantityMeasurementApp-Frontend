@@ -1,0 +1,125 @@
+<app-navbar></app-navbar>
+
+<div class="page-wide">
+
+  <div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+    <div>
+      <h1>Dashboard</h1>
+      <p>All your measurement operations</p>
+    </div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button class="btn btn-sm" (click)="loadDashboard()">↻ Refresh</button>
+      <button class="btn btn-sm btn-danger" (click)="confirmDeleteAll()">Delete all</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Total operations</div>
+      <div class="stat-value">{{ loading ? '—' : statTotal }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Comparisons</div>
+      <div class="stat-value">{{ loading ? '—' : statCompare }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Conversions</div>
+      <div class="stat-value">{{ loading ? '—' : statConvert }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Arithmetic</div>
+      <div class="stat-value">{{ loading ? '—' : statArithmetic }}</div>
+    </div>
+  </div>
+
+  <!-- Filter tabs -->
+  <div class="tabs">
+    @for (f of filters; track f) {
+      <button
+        class="tab-btn"
+        [class.active]="currentFilter === f"
+        (click)="setFilter(f)">
+        {{ f === 'ALL' ? 'All' : (f | titlecase) }}
+      </button>
+    }
+  </div>
+
+  <!-- Alert -->
+  @if (alert) {
+    <div class="alert show" [ngClass]="'alert-' + alertType" style="margin-bottom:1rem;">
+      {{ alert }}
+    </div>
+  }
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Operation</th>
+          <th>Operand 1</th>
+          <th>Operand 2</th>
+          <th>Result</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Loading state -->
+        @if (loading) {
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="spinner show" style="margin:0 auto;"></div>
+              </div>
+            </td>
+          </tr>
+        }
+
+        <!-- Empty state -->
+        @if (!loading && filteredMeasurements.length === 0) {
+          <tr>
+            <td colspan="5">
+              <div class="empty-state">
+                <div class="empty-icon">◎</div>
+                <p>{{ emptyMessage() }}</p>
+              </div>
+            </td>
+          </tr>
+        }
+
+        <!-- Data rows -->
+        @for (m of filteredMeasurements; track m) {
+          <tr>
+            <td><span class="badge badge-blue">{{ m.operationType }}</span></td>
+            <td>
+              {{ m.operand1Value ?? '—' }}
+              <span style="color:var(--hint)">{{ m.operand1Unit ?? '' }}</span>
+            </td>
+            <td>
+              @if (m.operand2Value !== undefined && m.operand2Value !== null) {
+                {{ m.operand2Value }}
+                <span style="color:var(--hint)">{{ m.operand2Unit ?? '' }}</span>
+              } @else {
+                <span style="color:var(--hint)">—</span>
+              }
+            </td>
+            <td style="font-weight:500; color:var(--text)">
+              {{ m.resultValue ?? '—' }}
+              <span style="color:var(--hint)">{{ m.resultUnit ?? '' }}</span>
+            </td>
+            <td>
+              @if (m.success) {
+                <span class="badge badge-green">OK</span>
+              }
+              @if (!m.success) {
+                <span class="badge badge-red" [title]="m.errorMessage || ''">Error</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+</div>

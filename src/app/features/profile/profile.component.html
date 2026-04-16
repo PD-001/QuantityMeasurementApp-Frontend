@@ -1,0 +1,96 @@
+<app-navbar></app-navbar>
+
+<div class="page">
+
+  <div class="page-header">
+    <h1>Profile</h1>
+    <p>Your account details</p>
+  </div>
+
+  @if (alert) {
+    <div class="alert show" [ngClass]="'alert-' + alertType" style="margin-bottom:1rem;">
+      {{ alert }}
+    </div>
+  }
+
+  <!-- Loading skeleton -->
+  @if (loading) {
+    <div class="card">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <div style="width:64px;height:64px;border-radius:50%;background:var(--bg);border:1px solid var(--border);flex-shrink:0;"></div>
+        <div style="flex:1;">
+          <div style="height:16px;background:var(--bg);border-radius:4px;width:40%;margin-bottom:8px;"></div>
+          <div style="height:13px;background:var(--bg);border-radius:4px;width:60%;"></div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Profile card -->
+  @if (!loading && user) {
+    <div class="card">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          @if (user.picture) {
+            <img [src]="user.picture" [alt]="user.name" />
+          }
+          @if (!user.picture) {
+            <span>{{ avatarInitial }}</span>
+          }
+        </div>
+        <div>
+          <div class="profile-name">{{ user.name || '—' }}</div>
+          <div class="profile-email">{{ user.email || '—' }}</div>
+        </div>
+      </div>
+      <hr class="divider">
+      <p class="section-title">Account details</p>
+      <div class="field-row">
+        <span class="field-label">User ID</span>
+        <span class="field-value">{{ user.id || '—' }}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Email</span>
+        <span class="field-value">{{ user.email || '—' }}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Name</span>
+        <span class="field-value">{{ user.name || '—' }}</span>
+      </div>
+      <div class="field-row">
+        <span class="field-label">Login provider</span>
+        <span class="field-value">
+          <span class="badge badge-blue">{{ providerLabel }}</span>
+        </span>
+      </div>
+      <hr class="divider">
+      <p class="section-title">Session</p>
+      <div class="field-row">
+        <span class="field-label">JWT token</span>
+        <span>
+          <button class="btn btn-sm" (click)="toggleToken()">
+            {{ tokenVisible ? 'Hide token' : 'Show token' }}
+          </button>
+        </span>
+      </div>
+      @if (tokenVisible) {
+        <div style="margin-top:10px;">
+          <div class="token-box">{{ token }}</div>
+          <p style="font-size:12px; color:var(--hint); margin-top:6px;">
+            Copy this token and use it in Postman as:
+            <code>Authorization: Bearer &lt;token&gt;</code>
+          </p>
+        </div>
+      }
+      <hr class="divider">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <div>
+          <p style="font-size:14px; font-weight:500;">Sign out</p>
+          <p style="font-size:13px; color:var(--muted);">Clears your session from this browser.</p>
+        </div>
+        <button class="btn btn-danger btn-sm" (click)="logout()">Sign out</button>
+      </div>
+    </div>
+  }
+
+</div>

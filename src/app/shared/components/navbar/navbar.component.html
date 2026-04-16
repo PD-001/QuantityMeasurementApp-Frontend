@@ -1,0 +1,32 @@
+<nav>
+  <a class="nav-brand" routerLink="/dashboard">Quantity <span>Measurement</span></a>
+
+  <ul class="nav-links">
+    <li>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    </li>
+    <li>
+      <a routerLink="/operations" routerLinkActive="active">Operations</a>
+    </li>
+    <li>
+      <a routerLink="/profile" routerLinkActive="active">Profile</a>
+    </li>
+  </ul>
+
+  <div class="nav-right">
+    @if (isLoggedIn) {
+      <div class="avatar" routerLink="/profile" style="cursor:pointer">
+        @if (user?.picture) {
+          <img [src]="user!.picture" [alt]="user!.name" />
+        }
+        @if (!user?.picture) {
+          <span>{{ avatarInitial }}</span>
+        }
+      </div>
+    } @else {
+      <a routerLink="/login" class="btn btn-sm" style="font-size:13px; padding:5px 12px;">
+        Login to save history
+      </a>
+    }
+  </div>
+</nav>

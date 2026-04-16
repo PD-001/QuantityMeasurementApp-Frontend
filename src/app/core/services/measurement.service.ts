@@ -4,8 +4,9 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Quantity, Measurement, OperationResult } from '../../shared/models/measurement.model';
 import { AuthService } from './auth.service';
+import { environment } from 'src/environments/environment';
 
-const API_BASE = 'http://localhost:8080';
+const API_BASE = environment.apiUrl;
 
 export interface ApiResult<T = unknown> {
   ok: boolean;

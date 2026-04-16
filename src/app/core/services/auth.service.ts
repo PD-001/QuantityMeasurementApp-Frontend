@@ -3,8 +3,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, from, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { UserProfile, AuthResponse } from '../../shared/models/measurement.model';
+import { environment } from 'src/environments/environment';
 
-const API_BASE = 'http://localhost:8080';
+const API_BASE = environment.apiUrl;
 const TOKEN_KEY = 'jwt_token';
 const PROFILE_KEY = 'user_profile';
 

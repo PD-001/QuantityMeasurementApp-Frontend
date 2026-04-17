@@ -1,6 +1,6 @@
 # Quantity Measurement App — Frontend
 
-An Angular 21 single-page application for performing unit conversions, comparisons, and arithmetic operations across length, weight, volume, and temperature — secured with Google OAuth2 and JWT authentication.
+An Angular 21 application for performing unit conversions, comparisons, and arithmetic operations across length, weight, volume, and temperature — secured with Google OAuth2 and JWT authentication.
 
 ---
 
